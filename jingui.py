@@ -70,7 +70,7 @@ class Jingui(object):
     def random_password(self, length):
         return ''.join(
             random.SystemRandom().choice(
-                string.ascii_uppercase + string.digits
+                string.ascii_letters + string.digits
             ) for _ in range(length)
         )
 
