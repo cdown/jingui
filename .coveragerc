@@ -1,7 +1,9 @@
 [run]
 omit =
+    /usr/*
     */site-packages/*
     */dist-packages/*
+    */distutils/*
     */tests/*
 
 exclude_lines =
