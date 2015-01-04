@@ -27,6 +27,14 @@ class JinguiTests(unittest.TestCase):
         ok(os.path.isdir(self.j.repo_dir))
         eq(0o700, mode)
 
+    def test_init_repo_original(self):
+        j_temp = jingui.Jingui()
+
+        eq(
+            os.path.expanduser('~/.jingui'),
+            j_temp.repo_dir,
+        )
+
     def test_hierarchy_to_string(self):
         eq(
             'foo/bar/baz',
