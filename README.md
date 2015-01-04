@@ -1,3 +1,6 @@
+![Travis CI test status](https://img.shields.io/travis/cdown/jingui/master.svg)
+![Coverage](https://img.shields.io/coveralls/cdown/jingui/master.svg)
+
 [jingui][] (from "金柜/金匱" ("strongbox"), or perhaps "[金龟/金龜][]" if it is
 running particularly slowly on your machine ;-)), is a simple password manager
 designed to adhere to the Unix philosophy. It uses [GPG][] for encryption and
