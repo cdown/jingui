@@ -8,7 +8,7 @@ python:
 script:
   - pylint -d bad-builtin jingui.py
   - pep8 jingui.py
-  - flake8 --max-complexity 2 jingui.py
+  - flake8 --max-complexity 5 jingui.py
   - nosetests --with-coverage
 after_success:
   - coveralls
