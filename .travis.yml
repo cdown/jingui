@@ -1,0 +1,14 @@
+language: python
+install:
+  - pip install --use-mirrors nose pep8 pylint flake8 coveralls
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+script:
+  - pylint -d bad-builtin jingui.py
+  - pep8 jingui.py
+  - flake8 --max-complexity 2 jingui.py
+  - nosetests --with-coverage
+after_success:
+  - coveralls
