@@ -6,7 +6,7 @@
 [travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg
 [coveralls]: https://coveralls.io/r/cdown/jingui
 [coveralls-image]: https://img.shields.io/coveralls/cdown/jingui/master.svg
-[scrutinizer]: https://scrutinizer-ci.com/g/cdown/jingui/
+[scrutinizer]: https://scrutinizer-ci.com/g/cdown/jingui/code-structure/master/hot-spots
 [scrutinizer-image]: https://img.shields.io/scrutinizer/g/cdown/jingui.svg
 
 [jingui][] (from "金柜/金匱" ("strongbox"), or perhaps "[金龟/金龜][]" if it is
