@@ -1,10 +1,13 @@
 [![Build status][travis-image]][travis-builds]
 [![Coverage][coveralls-image]][coveralls]
+[![Code quality][scrutinizer-image]][scrutinizer]
 
 [travis-builds]: https://travis-ci.org/cdown/jingui
 [travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg
 [coveralls]: https://coveralls.io/r/cdown/jingui
 [coveralls-image]: https://img.shields.io/coveralls/cdown/jingui/master.svg
+[scrutinizer]: https://scrutinizer-ci.com/g/cdown/jingui/
+[scrutinizer-image]: https://img.shields.io/scrutinizer/g/cdown/jingui.svg
 
 [jingui][] (from "金柜/金匱" ("strongbox"), or perhaps "[金龟/金龜][]" if it is
 running particularly slowly on your machine ;-)), is a simple password manager
