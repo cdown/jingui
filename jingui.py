@@ -42,9 +42,9 @@ class Jingui(object):
         except IOError as e:
             if e.errno != errno.ENOENT:
                 raise
-            return {}
-        else:
-            return map_file_contents
+            map_file_contents = {}
+
+        return map_file_contents
 
     def save_map_file(self):
         with open(self.map_file, 'w+') as f:
