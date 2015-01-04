@@ -74,6 +74,11 @@ class Jingui(object):
             ) for _ in range(length)
         )
 
+    def open_file_in_editor(self, file_name):
+        subprocess.check_call([self.editor, file_name])
+        if not os.path.isfile(file_name):
+            raise IOError('File was not written by your editor')
+
     def add_metadata_to_repo(self, hierarchy, generate=False, length=50):
         try:
             # Check if we already have a file for this hierarchy in the repo
@@ -87,9 +92,7 @@ class Jingui(object):
             with open(abs_file_name, 'w+') as f:
                 f.write('%s\n' % self.random_password(length))
         else:
-            subprocess.check_call([self.editor, abs_file_name])
-            if not os.path.isfile(abs_file_name):
-                raise IOError('File was not written by your editor')
+            self.open_file_in_editor(abs_file_name)
 
         self.add_to_map_file(hierarchy, file_name)
         return file_name
