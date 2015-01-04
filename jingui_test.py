@@ -34,7 +34,11 @@ class JinguiTests(unittest.TestCase):
         )
 
     def test_determine_editor_set_editor(self):
-        del os.environ['VISUAL']
+        try:
+            del os.environ['VISUAL']
+        except KeyError:
+            pass
+
         os.environ['EDITOR'] = 'EDITOR'
         eq(
             'EDITOR',
