@@ -26,10 +26,12 @@ class Jingui(object):
     def init_repo(self):
         mkpath(self.repo_dir, mode=0o100700)
 
-    def hierarchy_to_string(self, hierarchy):
+    @staticmethod
+    def hierarchy_to_string(hierarchy):
         return '/'.join(hierarchy)
 
-    def determine_editor(self):
+    @staticmethod
+    def determine_editor():
         for env in ['VISUAL', 'EDITOR']:
             if env in os.environ:
                 return os.environ[env]
@@ -37,18 +39,18 @@ class Jingui(object):
 
     def read_map_file(self):
         try:
-            with open(self.map_file, 'r+') as f:
-                map_file_contents = json.load(f)
-        except IOError as e:
-            if e.errno != errno.ENOENT:
+            with open(self.map_file, 'r+') as map_f:
+                map_file_contents = json.load(map_f)
+        except IOError as exc:
+            if exc.errno != errno.ENOENT:
                 raise
             map_file_contents = {}
 
         return map_file_contents
 
     def save_map_file(self):
-        with open(self.map_file, 'w+') as f:
-            json.dump(self.map_file_contents, f)
+        with open(self.map_file, 'w+') as map_f:
+            json.dump(self.map_file_contents, map_f)
 
     def add_to_map_file(self, hierarchy, path):
         # TODO: Behaviour on overwriting existing hierarchy?
@@ -67,7 +69,8 @@ class Jingui(object):
     def absolute_path_to_file(self, path):
         return os.path.join(self.repo_dir, path)
 
-    def random_password(self, length):
+    @staticmethod
+    def random_password(length):
         return ''.join(
             random.SystemRandom().choice(
                 string.ascii_letters + string.digits
@@ -89,8 +92,8 @@ class Jingui(object):
         abs_file_name = self.absolute_path_to_file(file_name)
 
         if generate:
-            with open(abs_file_name, 'w+') as f:
-                f.write('%s\n' % self.random_password(length))
+            with open(abs_file_name, 'w+') as password_f:
+                password_f.write('%s\n' % self.random_password(length))
         else:
             self.open_file_in_editor(abs_file_name)
 
