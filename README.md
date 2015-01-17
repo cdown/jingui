@@ -1,23 +1,26 @@
-[![Build status][travis-image]][travis-builds]
+[![Linux build status][travis-image]][travis-builds]
+[![Windows build status][appveyor-image]][appveyor-builds]
 [![Coverage][coveralls-image]][coveralls]
-[![Code quality][scrutinizer-image]][scrutinizer]
+[![Code health][landscape-image]][landscape]
 [![Dependencies][requires-image]][requires]
 
 [travis-builds]: https://travis-ci.org/cdown/jingui
-[travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg
+[travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg?label=linux
+[appveyor-builds]: https://ci.appveyor.com/project/cdown/jingui
+[appveyor-image]: https://img.shields.io/appveyor/ci/cdown/jingui/master.svg?label=windows
 [coveralls]: https://coveralls.io/r/cdown/jingui
 [coveralls-image]: https://img.shields.io/coveralls/cdown/jingui/master.svg
-[scrutinizer]: https://scrutinizer-ci.com/g/cdown/jingui/code-structure/master/hot-spots
-[scrutinizer-image]: https://img.shields.io/scrutinizer/g/cdown/jingui.svg
+[landscape]: https://landscape.io/github/cdown/jingui/master
+[landscape-image]: https://landscape.io/github/cdown/jingui/master/landscape.svg
 [requires]: https://requires.io/github/cdown/jingui/requirements/?branch=master
-[requires-image]: https://img.shields.io/requires/github/cdown/jingui.svg
+[requires-image]: https://img.shields.io/requires/github/cdown/jingui.svg?label=deps
 
 [jingui][] (from "金柜/金匱" ("strongbox"), or perhaps "[金龟/金龜][]" if it is
 running particularly slowly on your machine ;-)), is a simple password manager
 designed to adhere to the Unix philosophy. It uses [GPG][] for encryption and
 signing, and [git][] for history.
 
-# Work in progress
+## Work in progress
 
 Be warned, jingui is very much a work in progress. Much of the stuff you will
 read below has either not been implemented yet, or has only been partially
