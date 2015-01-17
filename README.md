@@ -4,7 +4,7 @@
 [![Dependencies][requires-image]][requires]
 
 [travis-builds]: https://travis-ci.org/cdown/jingui
-[travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg?label=linux
+[travis-image]: https://img.shields.io/travis/cdown/jingui/master.svg?label=build
 [coveralls]: https://coveralls.io/r/cdown/jingui
 [coveralls-image]: https://img.shields.io/coveralls/cdown/jingui/master.svg
 [landscape]: https://landscape.io/github/cdown/jingui/master
