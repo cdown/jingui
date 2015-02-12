@@ -25,6 +25,7 @@ class Jingui(object):
 
     def init_repo(self):
         mkpath(self.repo_dir, mode=0o100700)
+        self.git(['init'])
 
     @staticmethod
     def hierarchy_to_string(hierarchy):
@@ -56,6 +57,7 @@ class Jingui(object):
         # TODO: Behaviour on overwriting existing hierarchy?
         hier_str = self.hierarchy_to_string(hierarchy)
         self.map_file_contents[hier_str] = path
+        self.save_map_file()
 
     def remove_from_map_file(self, hierarchy):
         del self.map_file_contents[self.hierarchy_to_string(hierarchy)]
@@ -76,6 +78,24 @@ class Jingui(object):
                 string.ascii_letters + string.digits
             ) for _ in range(length)
         )
+
+    def git(self, args):
+        env = {
+            'GIT_WORK_TREE': self.repo_dir,
+            'GIT_DIR': os.path.join(self.repo_dir, '.git'),
+        }
+        subprocess.check_call(['git'] + args, env=env)
+
+    def git_commit_path_safe(self, path, msg=''):
+        self.git(['reset', '.'])
+        self.git(['add', self.map_file, path])
+        self.git(['commit', '--allow-empty-message', '-m', msg])
+
+    def git_remove_path_safe(self, path, msg=''):
+        self.git(['reset', '.'])
+        self.git(['add', self.map_file])
+        self.git(['rm', path])
+        self.git(['commit', '--allow-empty-message', '-m', msg])
 
     def open_file_in_editor(self, file_name):
         subprocess.check_call([self.editor, file_name])
@@ -98,10 +118,12 @@ class Jingui(object):
             self.open_file_in_editor(abs_file_name)
 
         self.add_to_map_file(hierarchy, file_name)
+        self.git_commit_path_safe(file_name)
+
         return file_name
 
     def remove_metadata_from_repo(self, hierarchy):
         path = self.get_path_from_hierarchy(hierarchy)
         self.remove_from_map_file(hierarchy)
-        os.unlink(self.absolute_path_to_file(path))
+        self.git_remove_path_safe(path)
         return path
