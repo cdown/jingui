@@ -142,8 +142,8 @@ class JinguiTests(unittest.TestCase):
         eq('baz', self.j.get_path_from_hierarchy(['foo', 'bar']))
 
     def test_cleanup_map_file_is_saved(self):
-        self.j.add_to_map_file(['foo', 'bar'], 'baz')
-        self.j.add_to_map_file(['wibble', 'wobble'], 'jelly')
+        self.j.add_to_map_file(['foo', 'bar'], 'baz', save=False)
+        self.j.add_to_map_file(['wibble', 'wobble'], 'jelly', save=False)
 
         eq({}, self.j.read_map_file())
 

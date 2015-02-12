@@ -53,11 +53,12 @@ class Jingui(object):
         with open(self.map_file, 'w+') as map_f:
             json.dump(self.map_file_contents, map_f)
 
-    def add_to_map_file(self, hierarchy, path):
+    def add_to_map_file(self, hierarchy, path, save=True):
         # TODO: Behaviour on overwriting existing hierarchy?
         hier_str = self.hierarchy_to_string(hierarchy)
         self.map_file_contents[hier_str] = path
-        self.save_map_file()
+        if save:
+            self.save_map_file()
 
     def remove_from_map_file(self, hierarchy):
         del self.map_file_contents[self.hierarchy_to_string(hierarchy)]
