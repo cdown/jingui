@@ -80,9 +80,15 @@ class Jingui(object):
         )
 
     def git(self, args):
+        name = 'x'
+        email = 'x'
         env = {
             'GIT_WORK_TREE': self.repo_dir,
             'GIT_DIR': os.path.join(self.repo_dir, '.git'),
+            'GIT_COMMITTER_EMAIL': email,
+            'GIT_COMMITTER_NAME': name,
+            'GIT_AUTHOR_EMAIL': email,
+            'GIT_AUTHOR_NAME': name,
         }
         subprocess.check_call(['git'] + args, env=env)
 
