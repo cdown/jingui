@@ -2,6 +2,7 @@
 
 from distutils.dir_util import mkpath
 import subprocess
+from subprocess import PIPE, STDOUT
 import errno
 import locale
 import random
@@ -13,16 +14,18 @@ import uuid
 
 class Jingui(object):
     def __init__(self, repo_dir=None):
+        self.system_locale = locale.getdefaultlocale()[1]
+
         if repo_dir is None:
             self.repo_dir = os.path.expanduser('~/.jingui')
         else:
             self.repo_dir = repo_dir
 
-        self.init_repo()
-
         self.map_file = os.path.join(self.repo_dir, 'map')
         self.map_file_contents = self.read_map_file()
         self.editor = self.determine_editor()
+
+        self.init_repo()
 
     def init_repo(self):
         mkpath(self.repo_dir, mode=0o100700)
@@ -82,8 +85,6 @@ class Jingui(object):
         )
 
     def git(self, args):
-        encoding = locale.getdefaultlocale()[1]
-
         env = os.environ.copy()
         env.update({
             'GIT_WORK_TREE': self.repo_dir,
@@ -92,7 +93,26 @@ class Jingui(object):
         })
 
         stdout = subprocess.check_output(['git'] + args, env=env)
-        return stdout.decode(encoding)
+        return stdout.decode(self.system_locale)
+
+    def gpg_agent_args_if_available(self):
+        if 'GPG_AGENT_INFO' in os.environ:
+            return ['--batch', '--use-agent']
+        return []
+
+    def gpg(self, args, base_args=None, stdin=None):
+        if base_args is None:
+            base_args = [
+                '--quiet', '--yes', '--compress-algo=none', '--no-encrypt-to',
+            ]
+            base_args.extend(gpg_agent_args_if_available())
+
+        process = subprocess.Popen(['gpg'] + args)
+        stdout, stderr = process.communicate(
+            input=stdin, stdin=PIPE, stdout=PIPE, stderr=STDOUT,
+        )
+
+        return stdout.decode(self.system_locale)
 
     def git_commit_path_safe(self, path, msg=''):
         self.git(['reset', '.'])
