@@ -100,7 +100,6 @@ it has some limitations that I don't like:
   metadata at a later point, instead relying on manual intervention;
 - The original script has become quite convoluted, largely due to corner cases
   and complexity compromises that are for edge-case systems;
-- No automated tests of any kind;
 - Commands like `generate` overwrite metadata, metadata is treated as a
   second-class citizen;
 - Filenames are not encrypted, they are stored raw.
