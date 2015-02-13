@@ -84,17 +84,12 @@ class Jingui(object):
     def git(self, args):
         encoding = locale.getdefaultlocale()[1]
 
-        name = 'jingui'
-        email = 'jingui'
-        env = {
+        env = os.environ.copy()
+        env.update({
             'GIT_WORK_TREE': self.repo_dir,
             'GIT_DIR': os.path.join(self.repo_dir, '.git'),
-            'GIT_COMMITTER_EMAIL': email,
-            'GIT_COMMITTER_NAME': name,
-            'GIT_AUTHOR_EMAIL': email,
-            'GIT_AUTHOR_NAME': name,
             'PAGER': 'cat',
-        }
+        })
 
         stdout = subprocess.check_output(['git'] + args, env=env)
         return stdout.decode(encoding)
