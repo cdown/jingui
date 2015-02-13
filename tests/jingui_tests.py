@@ -224,3 +224,4 @@ class JinguiTests(unittest.TestCase):
 
         eq(in_file, out_file)
         ok(not os.path.exists(self.j.relative_path_to_abs(in_file)))
+        ok(self.file_was_changed_last_commit(in_file, 'D'))
