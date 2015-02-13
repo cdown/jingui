@@ -5,6 +5,9 @@ python:
   - 2.7
   - 3.3
   - 3.4
+before_script:
+  - git config --global user.email travis@ci
+  - git config --global user.name Travis
 script:
   - nosetests --with-coverage
 after_success:
