@@ -18,8 +18,26 @@ class JinguiTests(unittest.TestCase):
         self.j = jingui.Jingui(repo_dir)
         self.j.init_repo()
 
+        # Create empty commit to make modification tests obvious
+        self.j.git(['commit', '--allow-empty', '-m', 'TEST'])
+
     def tearDown(self):
         shutil.rmtree(self.j.repo_dir)
+
+    def file_was_changed_last_commit(self, path, state):
+        stdout = self.j.git(['diff', '--name-status', 'HEAD^', 'HEAD'])
+        stdout_lines = stdout.split('\n')
+
+        for line in stdout_lines:
+            try:
+                changed_state, changed_path = line.split('\t', 1)
+            except ValueError:
+                continue
+
+            if changed_state == state and changed_path == path:
+                return True
+
+        return False
 
     def test_init_repo(self):
         mode = stat.S_IMODE(os.stat(self.j.repo_dir).st_mode)
@@ -142,8 +160,8 @@ class JinguiTests(unittest.TestCase):
         eq('baz', self.j.get_path_from_hierarchy(['foo', 'bar']))
 
     def test_cleanup_map_file_is_saved(self):
-        self.j.add_to_map_file(['foo', 'bar'], 'baz')
-        self.j.add_to_map_file(['wibble', 'wobble'], 'jelly')
+        self.j.add_to_map_file(['foo', 'bar'], 'baz', save=False)
+        self.j.add_to_map_file(['wibble', 'wobble'], 'jelly', save=False)
 
         eq({}, self.j.read_map_file())
 
@@ -157,10 +175,10 @@ class JinguiTests(unittest.TestCase):
             self.j.read_map_file(),
         )
 
-    def test_absolute_path_to_file(self):
+    def test_relative_path_to_abs(self):
         eq(
             os.path.join(self.j.repo_dir, 'foo'),
-            self.j.absolute_path_to_file('foo'),
+            self.j.relative_path_to_abs('foo'),
         )
 
     def test_add_metadata_to_repo(self):
@@ -173,7 +191,13 @@ class JinguiTests(unittest.TestCase):
             self.j.map_file_contents,
         )
 
-        ok(os.path.isfile(self.j.absolute_path_to_file(file_name)))
+        ok(os.path.isfile(self.j.relative_path_to_abs(file_name)))
+
+    def test_add_metadata_to_repo_git(self):
+        map_file_basename = os.path.basename(self.j.map_file)
+        file_name = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
+        ok(self.file_was_changed_last_commit(file_name, 'A'))
+        ok(self.file_was_changed_last_commit(map_file_basename, 'A'))
 
     def test_add_metadata_to_repo_same_hierarchy_same_file(self):
         path_1 = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
@@ -201,4 +225,9 @@ class JinguiTests(unittest.TestCase):
         out_file = self.j.remove_metadata_from_repo(['foo', 'bar'])
 
         eq(in_file, out_file)
-        ok(not os.path.exists(self.j.absolute_path_to_file(in_file)))
+        ok(not os.path.exists(self.j.relative_path_to_abs(in_file)))
+
+    def test_remove_metadata_from_repo_git(self):
+        in_file = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
+        out_file = self.j.remove_metadata_from_repo(['foo', 'bar'])
+        ok(self.file_was_changed_last_commit(in_file, 'D'))
