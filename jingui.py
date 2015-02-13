@@ -84,8 +84,8 @@ class Jingui(object):
     def git(self, args):
         encoding = locale.getdefaultlocale()[1]
 
-        name = 'x'
-        email = 'x'
+        name = 'jingui'
+        email = 'jingui'
         env = {
             'GIT_WORK_TREE': self.repo_dir,
             'GIT_DIR': os.path.join(self.repo_dir, '.git'),
