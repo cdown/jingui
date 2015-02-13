@@ -12,6 +12,10 @@ import json
 import uuid
 
 
+class GitError(Exception):
+    pass
+
+
 class Jingui(object):
     def __init__(self, repo_dir=None):
         self.system_locale = locale.getdefaultlocale()[1]
@@ -92,7 +96,13 @@ class Jingui(object):
             'PAGER': 'cat',
         })
 
-        stdout = subprocess.check_output(['git'] + args, env=env)
+        try:
+            stdout = subprocess.check_output(
+                ['git'] + args, env=env, stderr=STDOUT,
+            )
+        except subprocess.CalledProcessError as err:
+            raise GitError(err.output)
+
         return stdout.decode(self.system_locale)
 
     def gpg_agent_args_if_available(self):

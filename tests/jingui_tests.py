@@ -231,3 +231,7 @@ class JinguiTests(unittest.TestCase):
         in_file = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
         out_file = self.j.remove_metadata_from_repo(['foo', 'bar'])
         ok(self.file_was_changed_last_commit(in_file, 'D'))
+
+    @raises(jingui.GitError)
+    def test_git_fail(self):
+        self.j.git(['doesnotexist'])
