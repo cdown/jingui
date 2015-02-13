@@ -191,9 +191,11 @@ class JinguiTests(unittest.TestCase):
             self.j.map_file_contents,
         )
 
-        map_file_basename = os.path.basename(self.j.map_file)
-
         ok(os.path.isfile(self.j.relative_path_to_abs(file_name)))
+
+    def test_add_metadata_to_repo_git(self):
+        map_file_basename = os.path.basename(self.j.map_file)
+        file_name = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
         ok(self.file_was_changed_last_commit(file_name, 'A'))
         ok(self.file_was_changed_last_commit(map_file_basename, 'A'))
 
@@ -224,4 +226,8 @@ class JinguiTests(unittest.TestCase):
 
         eq(in_file, out_file)
         ok(not os.path.exists(self.j.relative_path_to_abs(in_file)))
+
+    def test_remove_metadata_from_repo_git(self):
+        in_file = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)
+        out_file = self.j.remove_metadata_from_repo(['foo', 'bar'])
         ok(self.file_was_changed_last_commit(in_file, 'D'))
