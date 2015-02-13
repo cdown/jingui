@@ -70,7 +70,7 @@ class Jingui(object):
     def cleanup(self):
         self.save_map_file()
 
-    def absolute_path_to_file(self, path):
+    def relative_path_to_abs(self, path):
         return os.path.join(self.repo_dir, path)
 
     @staticmethod
@@ -122,7 +122,7 @@ class Jingui(object):
         except KeyError:
             file_name = str(uuid.uuid4())
 
-        abs_file_name = self.absolute_path_to_file(file_name)
+        abs_file_name = self.relative_path_to_abs(file_name)
 
         if generate:
             with open(abs_file_name, 'w+') as password_f:

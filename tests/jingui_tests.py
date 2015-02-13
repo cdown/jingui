@@ -175,10 +175,10 @@ class JinguiTests(unittest.TestCase):
             self.j.read_map_file(),
         )
 
-    def test_absolute_path_to_file(self):
+    def test_relative_path_to_abs(self):
         eq(
             os.path.join(self.j.repo_dir, 'foo'),
-            self.j.absolute_path_to_file('foo'),
+            self.j.relative_path_to_abs('foo'),
         )
 
     def test_add_metadata_to_repo(self):
@@ -193,7 +193,7 @@ class JinguiTests(unittest.TestCase):
 
         map_file_basename = os.path.basename(self.j.map_file)
 
-        ok(os.path.isfile(self.j.absolute_path_to_file(file_name)))
+        ok(os.path.isfile(self.j.relative_path_to_abs(file_name)))
         ok(self.file_was_changed_last_commit(file_name, 'A'))
         ok(self.file_was_changed_last_commit(map_file_basename, 'A'))
 
@@ -223,4 +223,4 @@ class JinguiTests(unittest.TestCase):
         out_file = self.j.remove_metadata_from_repo(['foo', 'bar'])
 
         eq(in_file, out_file)
-        ok(not os.path.exists(self.j.absolute_path_to_file(in_file)))
+        ok(not os.path.exists(self.j.relative_path_to_abs(in_file)))
