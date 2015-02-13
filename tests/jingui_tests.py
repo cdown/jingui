@@ -18,8 +18,26 @@ class JinguiTests(unittest.TestCase):
         self.j = jingui.Jingui(repo_dir)
         self.j.init_repo()
 
+        # Create empty commit to make modification tests obvious
+        self.j.git(['commit', '--allow-empty', '-m', 'TEST'])
+
     def tearDown(self):
         shutil.rmtree(self.j.repo_dir)
+
+    def file_was_changed_last_commit(self, path, state):
+        stdout = self.j.git(['diff', '--name-status', 'HEAD^', 'HEAD'])
+        stdout_lines = stdout.split('\n')
+
+        for line in stdout_lines:
+            try:
+                changed_state, changed_path = line.split('\t', 1)
+            except ValueError:
+                continue
+
+            if changed_state == state and changed_path == path:
+                return True
+
+        return False
 
     def test_init_repo(self):
         mode = stat.S_IMODE(os.stat(self.j.repo_dir).st_mode)
@@ -173,7 +191,11 @@ class JinguiTests(unittest.TestCase):
             self.j.map_file_contents,
         )
 
+        map_file_basename = os.path.basename(self.j.map_file)
+
         ok(os.path.isfile(self.j.absolute_path_to_file(file_name)))
+        ok(self.file_was_changed_last_commit(file_name, 'A'))
+        ok(self.file_was_changed_last_commit(map_file_basename, 'A'))
 
     def test_add_metadata_to_repo_same_hierarchy_same_file(self):
         path_1 = self.j.add_metadata_to_repo(['foo', 'bar'], generate=True)

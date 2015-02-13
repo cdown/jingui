@@ -3,6 +3,7 @@
 from distutils.dir_util import mkpath
 import subprocess
 import errno
+import locale
 import random
 import string
 import os
@@ -81,6 +82,8 @@ class Jingui(object):
         )
 
     def git(self, args):
+        encoding = locale.getdefaultlocale()[1]
+
         name = 'x'
         email = 'x'
         env = {
@@ -90,8 +93,11 @@ class Jingui(object):
             'GIT_COMMITTER_NAME': name,
             'GIT_AUTHOR_EMAIL': email,
             'GIT_AUTHOR_NAME': name,
+            'PAGER': 'cat',
         }
-        subprocess.check_call(['git'] + args, env=env)
+
+        stdout = subprocess.check_output(['git'] + args, env=env)
+        return stdout.decode(encoding)
 
     def git_commit_path_safe(self, path, msg=''):
         self.git(['reset', '.'])
