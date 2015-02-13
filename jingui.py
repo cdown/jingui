@@ -107,7 +107,7 @@ class Jingui(object):
             ]
             base_args.extend(gpg_agent_args_if_available())
 
-        process = subprocess.Popen(['gpg'] + args)
+        process = subprocess.Popen(['gpg'] + base_args + args)
         stdout, stderr = process.communicate(
             input=stdin, stdin=PIPE, stdout=PIPE, stderr=STDOUT,
         )
