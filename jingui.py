@@ -25,6 +25,9 @@ class Jingui(object):
         else:
             self.repo_dir = repo_dir
 
+        self.id_file = os.path.join(self.repo_dir, 'id')
+        self.id_file_contents = self.read_id_file
+
         self.map_file = os.path.join(self.repo_dir, 'map')
         self.map_file_contents = self.read_map_file()
         self.editor = self.determine_editor()
@@ -45,6 +48,21 @@ class Jingui(object):
             if env in os.environ:
                 return os.environ[env]
         return 'vi'
+
+    @staticmethod
+    def gpg_decrypt_from_file(enc_path):
+        with open(enc_path, 'r+') as enc_path_f:
+            cleartext = gpg(['-d'], stdin=enc_path_f.read())
+        return cleartext
+
+    @staticmethod
+    def gpg_encrypt_to_file(enc_path, data):
+        output = gpg(['-e', '-r', self.pgp_id, '-o', enc_path], stdin=data)
+        return output
+
+    def read_id_file(self):
+        with open(self.id_file, 'r+') as id_f:
+            return id_f.read()
 
     def read_map_file(self):
         try:
@@ -117,10 +135,11 @@ class Jingui(object):
             ]
             base_args.extend(gpg_agent_args_if_available())
 
-        process = subprocess.Popen(['gpg'] + base_args + args)
-        stdout, stderr = process.communicate(
-            input=stdin, stdin=PIPE, stdout=PIPE, stderr=STDOUT,
+        process = subprocess.Popen(
+            ['gpg'] + base_args + args,
+            stdin=PIPE, stdout=PIPE, stderr=STDOUT,
         )
+        stdout, stderr = process.communicate(stdin)
 
         return stdout.decode(self.system_locale)
 
