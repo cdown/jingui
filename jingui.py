@@ -10,6 +10,7 @@ import string
 import os
 import json
 import uuid
+import gnupg
 
 
 class GitError(Exception):
@@ -18,21 +19,20 @@ class GitError(Exception):
 
 class Jingui(object):
     def __init__(self, repo_dir=None):
+        self.gpg = gnupg.GPG()
         self.system_locale = locale.getdefaultlocale()[1]
+        self.editor = self.determine_editor()
 
         if repo_dir is None:
             self.repo_dir = os.path.expanduser('~/.jingui')
         else:
             self.repo_dir = repo_dir
 
-        self.id_file = os.path.join(self.repo_dir, 'id')
-        self.id_file_contents = self.read_id_file
-
+    def load_files(self):
+        self.pgp_id_file = os.path.join(self.repo_dir, 'id')
+        self.pgp_id = self.read_pgp_id_file()
         self.map_file = os.path.join(self.repo_dir, 'map')
         self.map_file_contents = self.read_map_file()
-        self.editor = self.determine_editor()
-
-        self.init_repo()
 
     def init_repo(self):
         mkpath(self.repo_dir, mode=0o100700)
@@ -49,35 +49,39 @@ class Jingui(object):
                 return os.environ[env]
         return 'vi'
 
-    @staticmethod
-    def gpg_decrypt_from_file(enc_path):
-        with open(enc_path, 'r+') as enc_path_f:
-            cleartext = gpg(['-d'], stdin=enc_path_f.read())
-        return cleartext
+    def gpg_decrypt_from_file(self, enc_path):
+        with open(enc_path) as enc_f:
+            decrypted = self.gpg.decrypt_file(enc_f)
+        return decrypted
 
-    @staticmethod
-    def gpg_encrypt_to_file(enc_path, data):
-        output = gpg(['-e', '-r', self.pgp_id, '-o', enc_path], stdin=data)
-        return output
+    def gpg_encrypt_to_file(self, data, enc_path):
+        encrypted = self.gpg.encrypt(data, self.pgp_id)
+        with open(enc_path, 'wb+') as enc_f:
+            enc_f.write(encrypted)
 
-    def read_id_file(self):
-        with open(self.id_file, 'r+') as id_f:
-            return id_f.read()
+    def read_pgp_id_file(self):
+        try:
+            with open(self.pgp_id_file, 'r+') as pgp_id_f:
+                return pgp_id_f.read()
+        except IOError as exc:
+            if exc.errno != errno.ENOENT:
+                raise
 
     def read_map_file(self):
         try:
-            with open(self.map_file, 'r+') as map_f:
-                map_file_contents = json.load(map_f)
+            decrypted = self.gpg_decrypt_from_file(self.map_file)
         except IOError as exc:
             if exc.errno != errno.ENOENT:
                 raise
             map_file_contents = {}
+        else:
+            map_file_contents = json.loads(decrypted)
 
         return map_file_contents
 
     def save_map_file(self):
-        with open(self.map_file, 'w+') as map_f:
-            json.dump(self.map_file_contents, map_f)
+        map_contents_cleartext = json.dumps(self.map_file_contents)
+        self.gpg_encrypt_to_file(map_contents_cleartext, self.map_file)
 
     def add_to_map_file(self, hierarchy, path, save=True):
         # TODO: Behaviour on overwriting existing hierarchy?
@@ -120,26 +124,6 @@ class Jingui(object):
             )
         except subprocess.CalledProcessError as err:
             raise GitError(err.output)
-
-        return stdout.decode(self.system_locale)
-
-    def gpg_agent_args_if_available(self):
-        if 'GPG_AGENT_INFO' in os.environ:
-            return ['--batch', '--use-agent']
-        return []
-
-    def gpg(self, args, base_args=None, stdin=None):
-        if base_args is None:
-            base_args = [
-                '--quiet', '--yes', '--compress-algo=none', '--no-encrypt-to',
-            ]
-            base_args.extend(gpg_agent_args_if_available())
-
-        process = subprocess.Popen(
-            ['gpg'] + base_args + args,
-            stdin=PIPE, stdout=PIPE, stderr=STDOUT,
-        )
-        stdout, stderr = process.communicate(stdin)
 
         return stdout.decode(self.system_locale)
 

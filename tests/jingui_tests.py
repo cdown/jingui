@@ -9,13 +9,26 @@ import shutil
 import subprocess
 import stat
 import unittest
+import gnupg
+
+
+def fixture(path):
+    return os.path.join(os.path.dirname(__file__), path)
 
 
 class JinguiTests(unittest.TestCase):
     def setUp(self):
+        self.gpg_temp = tempfile.mkdtemp()
+        self.gpg = gnupg.GPG(gnupghome=self.gpg_temp)
+        self.key_id = self.import_gpg_key()
+
         repo_dir = tempfile.mkdtemp()
         os.rmdir(repo_dir)
         self.j = jingui.Jingui(repo_dir)
+
+        self.j.load_files()
+        self.j.pgp_id = self.key_id
+
         self.j.init_repo()
 
         # Create empty commit to make modification tests obvious
@@ -38,6 +51,11 @@ class JinguiTests(unittest.TestCase):
                 return True
 
         return False
+
+    def import_gpg_key(self):
+        with open(fixture('jingui_test_gpg_secret_key')) as key_f:
+            import_result = self.gpg.import_keys(key_f.read())
+        return import_result[0]['fingerprint']
 
     def test_init_repo(self):
         mode = stat.S_IMODE(os.stat(self.j.repo_dir).st_mode)
