@@ -14,7 +14,7 @@
 
 [jingui][] (from "金柜/金匱" ("strongbox"), or perhaps "[金龟/金龜][]" if it is
 running particularly slowly on your machine ;-)), is a simple password manager
-designed to adhere to the Unix philosophy. It uses [GPG][] for encryption and
+designed to adhere to the Unix philosophy. It uses [NaCL][] for encryption and
 signing, and [git][] for history.
 
 ## Work in progress
@@ -26,23 +26,12 @@ jingui.
 
 ## Usage
 
-First, make sure you have GPG and git set up as required. If you don't, take a
-look at [GPG's getting started document][] and the [Git documentation][] to
-learn more.
+First, make sure you have git set up as required. If you don't, take a look at
+the [Git documentation][] to learn more.
 
-Now, we need to tell jingui which PGP key we should use. `-i` (or `--init`)
-tells jingui that you want to initialise the password store and provide this
-information. `jg` is the jingui binary.
-
-    # If you only have one PGP secret key, it will find it automatically
-    jg -i
-
-    # If you have multiple, you need to tell it which one
-    jg -i 0xDF8D21B616118070
-
-Now that we've got the password store set up, we can start to add passwords and
-other metadata. Make sure [`$EDITOR`][] or [`$VISUAL`][] are set appropriately
-in your environment.
+Now that we've got the Git set up, we can start to add passwords and other
+metadata. Make sure [`$EDITOR`][] or [`$VISUAL`][] are set appropriately in
+your environment.
 
     # Add a new password in your editor, or edit an existing one
     jg -e example
@@ -104,7 +93,7 @@ it has some limitations that I don't like:
   second-class citizen;
 - Filenames are not encrypted, they are stored raw.
 
-jingui, like pass (which very much inspired it), uses GPG and git, but is
+jingui is quite similar to pass (which very much inspired it), but it is
 designed to be much more flexible without losing the simplicity (both in user
 experience and use of existing tools) that makes pass great. Here are some ways
 that jingui attemps to alleviate the problems mentioned above:
@@ -116,6 +105,10 @@ that jingui attemps to alleviate the problems mentioned above:
   using the program;
 - jingui errs towards simplicity rather than functionality, and the internal
   code is clean and clearly separates functionality into different objects;
+- jingui uses [NaCL][] instead of GPG because the bindings are much more stable
+  and the API is better defined (`python-gnupg` is a good library, but no good
+  for bleeding edge systems as releases lag behind GPG mainline and are often
+  totally broken on such systems for this reason);
 - jingui does not have any connection between the filename a piece of metadata
   gets and the name of the metadata. Instead, random UUIDs are generated for
   each separate metadata file.
@@ -133,3 +126,4 @@ show it by using `-s`.
 [`$EDITOR`]: http://en.wikibooks.org/wiki/Guide_to_Unix/Environment_Variables#EDITOR
 [`$VISUAL`]: http://en.wikibooks.org/wiki/Guide_to_Unix/Environment_Variables#VISUAL
 [金龟/金龜]: http://baike.baidu.com/view/395421.htm
+[NaCL]: http://nacl.cr.yp.to
